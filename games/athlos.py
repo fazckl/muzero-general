@@ -17,8 +17,8 @@ class MuZeroConfig:
 
 
         ### Game
-        self.observation_shape = (3, 6, 7)  # Dimensions of the game observation, must be 3D (channel, height, width). For a 1D array, please reshape it to (1, 1, length of array)
-        self.action_space = list(range(7))  # Fixed list of all possible actions. You should only edit the length
+        self.observation_shape = (5, 20, 20)  # Dimensions of the game observation, must be 3D (channel, height, width). For a 1D array, please reshape it to (1, 1, length of array)
+        self.action_space = list(range())  # Fixed list of all possible actions. You should only edit the length
         self.players = list(range(2))  # List of players. You should only edit the length
         self.stacked_observations = 0  # Number of previous observations and previous actions to add to the current observation
 
@@ -31,7 +31,7 @@ class MuZeroConfig:
         ### Self-Play
         self.num_workers = 1  # Number of simultaneous threads/workers self-playing to feed the replay buffer
         self.selfplay_on_gpu = False
-        self.max_moves = 42  # Maximum number of moves if game is not finished before
+        self.max_moves = 42  # - müsste mal ertestet werden aber bestimmt über 200?  ..Maximum number of moves if game is not finished before
         self.num_simulations = 200  # Number of future moves self-simulated
         self.discount = 1  # Chronological discount of the reward
         self.temperature_threshold = None  # Number of moves before dropping the temperature given by visit_softmax_temperature_fn to 0 (ie selecting the best action). If None, visit_softmax_temperature_fn is used every time
@@ -241,6 +241,8 @@ class Connect4:
         board_to_play = numpy.full((6, 7), self.player, dtype="int32")
         return numpy.array([board_player1, board_player2, board_to_play])
 
+    
+    
     def legal_actions(self):
         legal = []
         for i in range(7):
@@ -248,88 +250,20 @@ class Connect4:
                 legal.append(i)
         return legal
 
+    
+    
     def have_winner(self):
-        # Horizontal check
-        for i in range(4):
-            for j in range(6):
-                if (
-                    self.board[j][i] == self.player
-                    and self.board[j][i + 1] == self.player
-                    and self.board[j][i + 2] == self.player
-                    and self.board[j][i + 3] == self.player
-                ):
-                    return True
-
-        # Vertical check
-        for i in range(7):
-            for j in range(3):
-                if (
-                    self.board[j][i] == self.player
-                    and self.board[j + 1][i] == self.player
-                    and self.board[j + 2][i] == self.player
-                    and self.board[j + 3][i] == self.player
-                ):
-                    return True
-
-        # Positive diagonal check
-        for i in range(4):
-            for j in range(3):
-                if (
-                    self.board[j][i] == self.player
-                    and self.board[j + 1][i + 1] == self.player
-                    and self.board[j + 2][i + 2] == self.player
-                    and self.board[j + 3][i + 3] == self.player
-                ):
-                    return True
-
-        # Negative diagonal check
-        for i in range(4):
-            for j in range(3, 6):
-                if (
-                    self.board[j][i] == self.player
-                    and self.board[j - 1][i + 1] == self.player
-                    and self.board[j - 2][i + 2] == self.player
-                    and self.board[j - 3][i + 3] == self.player
-                ):
-                    return True
-
+        if self.board[..][..] == self.player * -1 + 1:  # mit Koordinaten der Siegfelder
+            return True
         return False
 
+    
+    
     def expert_action(self):
         board = self.board
         action = numpy.random.choice(self.legal_actions())
-        for k in range(3):
-            for l in range(4):
-                sub_board = board[k : k + 4, l : l + 4]
-                # Horizontal and vertical checks
-                for i in range(4):
-                    if abs(sum(sub_board[i, :])) == 3:
-                        ind = numpy.where(sub_board[i, :] == 0)[0][0]
-                        if numpy.count_nonzero(board[:, ind + l]) == i + k:
-                            action = ind + l
-                            if self.player * sum(sub_board[i, :]) > 0:
-                                return action
-
-                    if abs(sum(sub_board[:, i])) == 3:
-                        action = i + l
-                        if self.player * sum(sub_board[:, i]) > 0:
-                            return action
-                # Diagonal checks
-                diag = sub_board.diagonal()
-                anti_diag = numpy.fliplr(sub_board).diagonal()
-                if abs(sum(diag)) == 3:
-                    ind = numpy.where(diag == 0)[0][0]
-                    if numpy.count_nonzero(board[:, ind + l]) == ind + k:
-                        action = ind + l
-                        if self.player * sum(diag) > 0:
-                            return action
-
-                if abs(sum(anti_diag)) == 3:
-                    ind = numpy.where(anti_diag == 0)[0][0]
-                    if numpy.count_nonzero(board[:, 3 - ind + l]) == ind + k:
-                        action = 3 - ind + l
-                        if self.player * sum(anti_diag) > 0:
-                            return action
+       
+        #immer Feld das am besten zum Gegner führt als "Experte" ?
 
         return action
 
