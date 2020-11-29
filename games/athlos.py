@@ -18,7 +18,13 @@ class MuZeroConfig:
 
         ### Game
         self.observation_shape = (5, 20, 20)  # Dimensions of the game observation, must be 3D (channel, height, width). For a 1D array, please reshape it to (1, 1, length of array)
-        self.action_space = list(range())  # Fixed list of all possible actions. You should only edit the length
+        self.action_space = list(range(334 + 334 + 334))  # auf 334 Felder kann gesetzt werden 
+                                                          # auf 334 kann geschlagen werden
+                                                          # auf 334 kann ein Anker gesetzt werden
+                                                          # 2 Ankerfelder  - wirklich als eigene Aktion??
+                                                          # 2 Siegfelder   - wirklich als eigene Aktion??
+                                                          # Fixed list of all possible actions. You should only edit the length
+                        
         self.players = list(range(2))  # List of players. You should only edit the length
         self.stacked_observations = 0  # Number of previous observations and previous actions to add to the current observation
 
@@ -208,25 +214,84 @@ class Game(AbstractGame):
         return f"Play column {action_number + 1}"
 
 
-class Connect4:
+class Athlos:    
     def __init__(self):
-        self.board = numpy.zeros((6, 7), dtype="int32")
-        self.player = 1
+        self.gap_dict = {0:6, 1:4, 2: 2, 3: 2, 4: 1, 5: 1,
+                         6:0, 7:0, 8:0, 9:0, 10:0, 11:0, 12:0, 13:0,
+                         14:1, 15:1, 16:2, 17:2, 18:4, 19:6}
+        
+        
+        self.cost_array = numpy.fill((20, 20), 1, dtype="int32")
+        # soll aus Datei eingelesen werden damit neue Spielfelder in der Anwendung erstellt werden können
+        with open("board1.
+        
+        self.board = numpy.zeros((20, 20), dtype="int32")        
+        self.player_tiles = [[x1, y2], [x2, y2]]
+        self.anchor_tiles = [[x1,y1,1], [x2,y2,1]]                  # Koordinaten noch hardcoden
+        self.target_tiles = [[[x1,y2],[x2,y2]], [[x3,y3],[x4,y4]]]  # Koordinaten noch hardcoden
+        self.action_points = [5, 5]
+        
+        self.tile_dict = {}  
+        tile_index = 0
+        for row in range(20):
+            column = 0
+            while column < 20 - gap_dict[row]
+                if column == 0 and gap_dict[row] != 0:
+                    column += gap_dict[row]
+                self.board[column][row] = 1
+                self.tile_dict[tile_index] = [column, row]
+                tile_index += 1
+                column += 1
+        self.board += 1   
+        
+      
+        self.player = 1 # Anfangsspieler wird oben in den Parametern festgelegt
 
+        
     def to_play(self):
         return 0 if self.player == 1 else 1
 
+    
     def reset(self):
-        self.board = numpy.zeros((6, 7), dtype="int32")
+        self.board = numpy.zeros((20, 20), dtype="int32")
+        column = 0
+        for row in range(20):
+            while column < 20 - gap_dict[row]
+                if column == 0 and gap_dict[row] != 0:
+                    column += gap_dict[row]
+                self.board[row][column] = 1
+                column += 1
+        self.board += 1  
         self.player = 1
         return self.get_observation()
 
-    def step(self, action):
-        for i in range(6):
-            if self.board[i][action] == 0:
-                self.board[i][action] = self.player
-                break
+    
+    def remove_dead_tiles(): 
+    
+    def DFS():
+        
+        
 
+        
+    
+    def step(self, action):
+        # hier Aktionen auf Brett anwenden
+        x = tile_dict[action%334][0]
+        y = tile_dict[action%334][1]
+        
+        if action < 334:
+            if self.board[x][y] == 0:
+                self.board[x][y] = self.player
+            
+        elif action < 334*2:
+            if self.board[x][y] == self.player * -1 or self.board[x][y] == (self.player + 1) * -1:
+                self.board[x][y] = 0
+            
+        elif action  < 334*3:
+            if self.board[x][y] == self.player:
+                self.board[x][y] = self.player + 1
+            
+                  
         done = self.have_winner() or len(self.legal_actions()) == 0
 
         reward = 1 if self.have_winner() else 0
@@ -235,9 +300,11 @@ class Connect4:
 
         return self.get_observation(), reward, done
 
+    
+    
     def get_observation(self):
-        board_player1 = numpy.where(self.board == 1, 1.0, 0.0)
-        board_player2 = numpy.where(self.board == -1, 1.0, 0.0)
+        board_player1 = numpy.where(self.board == 1, 1, 0)   # geändert von ..1.0, 0.0).. was doch gar keinen Sinn macht
+        board_player2 = numpy.where(self.board == -1, 1, 0)  # oder nicht  ... vielleicht doch, siehe self_play line .. weiß ich nicht mehr
         board_to_play = numpy.full((6, 7), self.player, dtype="int32")
         return numpy.array([board_player1, board_player2, board_to_play])
 
@@ -245,27 +312,30 @@ class Connect4:
     
     def legal_actions(self):
         legal = []
-        for i in range(7):
-            if self.board[5][i] == 0:
-                legal.append(i)
+
+        #   hier Erreichbarkeitscheck
+        # wenn board[x][y] != illegales Feld:
+        #
+        
         return legal
 
     
     
     def have_winner(self):
-        if self.board[..][..] == self.player * -1 + 1:  # mit Koordinaten der Siegfelder
-            return True
+        for tile in self.target_tiles:
+            if self.board[tile[0]][tile[1]] == self.player * -1:
+                return True
         return False
 
-    
     
     def expert_action(self):
         board = self.board
         action = numpy.random.choice(self.legal_actions())
        
-        #immer Feld das am besten zum Gegner führt als "Experte" ?
+        #immer Feld das am nächsten zum Gegner liegt als "Experte" ?
 
         return action
 
+    
     def render(self):
         print(self.board[::-1])
