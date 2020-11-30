@@ -285,7 +285,7 @@ class Athlos:
         anchor_indices = []
         
         for tile, coordinates in self.tile_dict.items():
-            owner = board[coordinates[0], coordinates[1]]
+            owner = self.board[coordinates[0], coordinates[1]]
 
             if len(anchor_indices < 2):
                 for anch_coord in anchor_tiles[opp_index]:  #schlechte Namen fuer allen Ankerkram
@@ -385,12 +385,12 @@ class Athlos:
         p1_tiles = []
         for y in range(20):
             for x in range(20):
-                if board[x][y] > 0:
+                if self.board[x][y] > 0:
                     p1_tiles.Add([x,y])
         p2_tiles = []
         for y in range(20):
             for x in range(20):
-                if board[x][y] < 0:
+                if self.board[x][y] < 0:
                     p2_tiles.Add([x,y])
         
         if self.player == 1:
@@ -417,7 +417,6 @@ class Athlos:
 
     
     def expert_action(self):
-        board = self.board
         player_index = 0 if player > 0 else 1
         expert_action = numpy.random.choice(self.legal_actions())
         distance = 50
