@@ -17,7 +17,7 @@ class MuZeroConfig:
 
 
         ### Game
-        self.observation_shape = (5, 20, 20)  # Dimensions of the game observation, must be 3D (channel, height, width). For a 1D array, please reshape it to (1, 1, length of array)
+        self.observation_shape = (3, 20, 20)  # Dimensions of the game observation, must be 3D (channel, height, width). For a 1D array, please reshape it to (1, 1, length of array)
         self.action_space = list(range(334 + 334 + 334))  # auf 334 Felder kann gesetzt werden 
                                                           # auf 334 kann geschlagen werden
                                                           # auf 334 kann ein Anker gesetzt werden
