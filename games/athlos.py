@@ -321,10 +321,10 @@ class Athlos:
             components[tile] = count
             coord = self.tile_dict[tile]
             neighbours = [
-                          self.coord_dict[ [coord[0]+1, coord[1]  ] ],
-                          self.coord_dict[ [coord[0]-1, coord[1]  ] ], 
-                          self.coord_dict[ [coord[0],   coord[1]+1] ],
-                          self.coord_dict[ [coord[0],   coord[1]-1] ]
+                          self.coord_dict[ repr[coord[0]+1, coord[1]  ] ],
+                          self.coord_dict[ repr[coord[0]-1, coord[1]  ] ], 
+                          self.coord_dict[ repr[coord[0],   coord[1]+1] ],
+                          self.coord_dict[ repr[coord[0],   coord[1]-1] ]
                          ]
 
             for n in neighbours:
