@@ -385,15 +385,13 @@ class Athlos:
         p1_tiles = []
         for y in range(20):
             for x in range(20):
-                if board[x][y] != -1:
-                    if board[x][y] == 1 or board[x][y] == 2:
-                        p1_tiles.Add([x,y])
+                if board[x][y] > 0:
+                    p1_tiles.Add([x,y])
         p2_tiles = []
         for y in range(20):
             for x in range(20):
-                if board[x][y] != :
-                    if board[x][y] == -1 or board[x][y] == -2:
-                        p2_tiles.Add([x,y])
+                if board[x][y] < 0:
+                    p2_tiles.Add([x,y])
         
         if self.player == 1:
             for tile in p1_tiles:
