@@ -232,9 +232,9 @@ class Athlos:
         tile_index = 0
         for row in range(20):
             column = 0
-            while column < 20 - gap_dict[row]:
-                if column == 0 and gap_dict[row] != 0:
-                    column += gap_dict[row]
+            while column < 20 - self.gap_dict[row]:
+                if column == 0 and self.gap_dict[row] != 0:
+                    column += self.gap_dict[row]
                 self.board[column][row] = 1
                 self.tile_dict[tile_index] = [column, row]
                 tile_index += 1
@@ -268,9 +268,9 @@ class Athlos:
         self.board = numpy.zeros((20, 20), dtype="int32")
         column = 0
         for row in range(20):
-            while column < 20 - gap_dict[row]:
-                if column == 0 and gap_dict[row] != 0:
-                    column += gap_dict[row]
+            while column < 20 - self.gap_dict[row]:
+                if column == 0 and self.gap_dict[row] != 0:
+                    column += self.gap_dict[row]
                 self.board[row][column] = 9             # irgendetwas das Sinn macht als Wert für die Ecken?
                 column += 1
         self.board -= 9                                 #   ""
