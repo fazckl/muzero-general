@@ -241,7 +241,7 @@ class Athlos:
                 column += 1
         self.board += 1 
 
-        coord_dict = {item[1]: item[0] for item in self.tile_dict.items()}  # rueckwaerts-dict
+        coord_dict = {repr(item[1]): item[0] for item in self.tile_dict.items()}  # rueckwaerts-dict
         
         self.cost_array = numpy.full((20, 20), 1, dtype="int32")
         with open("tileCost.xml", "r") as cost_file:
