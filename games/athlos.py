@@ -232,7 +232,7 @@ class Athlos:
         tile_index = 0
         for row in range(20):
             column = 0
-            while column < 20 - gap_dict[row]
+            while column < 20 - gap_dict[row]:
                 if column == 0 and gap_dict[row] != 0:
                     column += gap_dict[row]
                 self.board[column][row] = 1
