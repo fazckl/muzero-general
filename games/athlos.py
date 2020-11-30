@@ -278,37 +278,12 @@ class Athlos:
         return self.get_observation()
 
     
-
+#################
     def update_tiles():
         visited_tiles = {}
         components = {}
         anchor_indices = []
-
-        def find_components():
-            count = 0
-
-            for tile, visited in visited_tiles.items():
-                if not visited:
-                    count += 1
-                    DFS(tile, count)
-
-        def DFS(tile, count):
-            visited_tiles[tile] = True
-            components[tile] = count
-            coord = tile_dict[tile]
-            neighbours = [
-                          coord_dict[ [coord[0]+1, coord[1]  ] ],
-                          coord_dict[ [coord[0]-1, coord[1]  ] ], 
-                          coord_dict[ [coord[0],   coord[1]+1] ],
-                          coord_dict[ [coord[0],   coord[1]-1] ]
-                         ]
-
-            for n in neighbours:
-                try:
-                    if visited_tiles[tile] == False:
-                        DFS(n, count)
         
-
         for tile, coordinates in tile_dict.items():
             owner = board[coordinates[0], coordinates[1]]
 
@@ -330,6 +305,35 @@ class Athlos:
                     connected = True
             if not connected:
                 self.board[tile_dict[tile][0], tile_dict[tile][1]] = 0
+                
+                
+        #####        
+        def find_components():
+            count = 0
+
+            for tile, visited in visited_tiles.items():
+                if not visited:
+                    count += 1
+                    DFS(tile, count)
+        #####
+        def DFS(tile, count):
+            visited_tiles[tile] = True
+            components[tile] = count
+            coord = tile_dict[tile]
+            neighbours = [
+                          coord_dict[ [coord[0]+1, coord[1]  ] ],
+                          coord_dict[ [coord[0]-1, coord[1]  ] ], 
+                          coord_dict[ [coord[0],   coord[1]+1] ],
+                          coord_dict[ [coord[0],   coord[1]-1] ]
+                         ]
+
+            for n in neighbours:
+                try:
+                    if visited_tiles[tile] == False:
+                        DFS(n, count)
+        
+####################
+        
 
 
 
