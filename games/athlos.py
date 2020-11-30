@@ -241,7 +241,7 @@ class Athlos:
                 column += 1
         self.board += 1 
 
-        coord_dict = {item[1]: item[0] for item in tile_dict.items()}  # rückwärts-dict
+        coord_dict = {item[1]: item[0] for item in self.tile_dict.items()}  # rückwärts-dict
         
         self.cost_array = numpy.full((20, 20), 1, dtype="int32")
         with open("tileCost.xml", "r") as cost_file:
@@ -250,7 +250,7 @@ class Athlos:
             ind = 0
             for line in enumerate(lines):
                 if read == True:
-                    self.cost_array[tile_dict[ind][0]][tile_dict[ind][1]] = line.replace("\t", "").replace("\n", "")
+                    self.cost_array[self.tile_dict[ind][0]][self.tile_dict[ind][1]] = line.replace("\t", "").replace("\n", "")
                     ind += 1  
                 if "<Item>" in line:
                     read = True
@@ -284,7 +284,7 @@ class Athlos:
         components = {}
         anchor_indices = []
         
-        for tile, coordinates in tile_dict.items():
+        for tile, coordinates in self.tile_dict.items():
             owner = board[coordinates[0], coordinates[1]]
 
             if len(anchor_indices < 2):
@@ -304,7 +304,7 @@ class Athlos:
                 if components[tile] == components[anch_tile]:
                     connected = True
             if not connected:
-                self.board[tile_dict[tile][0], tile_dict[tile][1]] = 0
+                self.board[self.tile_dict[tile][0], self.tile_dict[tile][1]] = 0
                 
                 
         #####        
@@ -319,12 +319,12 @@ class Athlos:
         def DFS(tile, count):
             visited_tiles[tile] = True
             components[tile] = count
-            coord = tile_dict[tile]
+            coord = self.tile_dict[tile]
             neighbours = [
-                          coord_dict[ [coord[0]+1, coord[1]  ] ],
-                          coord_dict[ [coord[0]-1, coord[1]  ] ], 
-                          coord_dict[ [coord[0],   coord[1]+1] ],
-                          coord_dict[ [coord[0],   coord[1]-1] ]
+                          self.coord_dict[ [coord[0]+1, coord[1]  ] ],
+                          self.coord_dict[ [coord[0]-1, coord[1]  ] ], 
+                          self.coord_dict[ [coord[0],   coord[1]+1] ],
+                          self.coord_dict[ [coord[0],   coord[1]-1] ]
                          ]
 
             for n in neighbours:
@@ -340,8 +340,8 @@ class Athlos:
                 
     def step(self, action):
         # hier Aktionen auf Brett anwenden
-        x = tile_dict[action%334][0]
-        y = tile_dict[action%334][1]
+        x = self.tile_dict[action%334][0]
+        y = self.tile_dict[action%334][1]
         
         action_cost = cost_array[x][y]
         player_index = 0 if self.player > 0 else 1 # 1 -> 0, -1 -> 1
@@ -423,8 +423,8 @@ class Athlos:
         distance = 50
         #immer Feld das am nächsten zum Gegner liegt als "Experte" ?
         for action in self.legal_actions():
-            if math.sqrt((tile_dict[action%334][0] - player_tiles[player_index][0])**2
-                       + (tile_dict[action%334][1] - player_tiles[player_index][1])**2)  <  distance:
+            if math.sqrt((self.tile_dict[action%334][0] - player_tiles[player_index][0])**2
+                       + (self.tile_dict[action%334][1] - player_tiles[player_index][1])**2)  <  distance:
                 expert_action = action
 
         return expert_action
