@@ -249,7 +249,7 @@ class Athlos:
             read = False
             ind = 0
             for line in enumerate(lines):
-                if read = True:
+                if read == True:
                     self.cost_array[tile_dict[ind][0]][tile_dict[ind][1]] = line.replace("\t", "").replace("\n", "")
                     ind += 1  
                 if "<Item>" in line:
