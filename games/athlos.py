@@ -219,17 +219,14 @@ class Athlos:
         self.gap_dict = {0:6, 1:4, 2: 2, 3: 2, 4: 1, 5: 1,
                          6:0, 7:0, 8:0, 9:0, 10:0, 11:0, 12:0, 13:0,
                          14:1, 15:1, 16:2, 17:2, 18:4, 19:6}
-        
-        
-        self.cost_array = numpy.fill((20, 20), 1, dtype="int32")
-        # soll aus Datei eingelesen werden damit neue Spielfelder in der Anwendung erstellt werden können
-        with open("board1.
-        
+
+        #board: -9, blockiertes Feld; -2, Anker Spieler2; -1, Spieler2; 0, freies Feld; 1, Spieler1; 2 Anker Spieler1  
         self.board = numpy.zeros((20, 20), dtype="int32")        
-        self.player_tiles = [[x1, y2], [x2, y2]]
-        self.anchor_tiles = [[x1,y1,1], [x2,y2,1]]                  # Koordinaten noch hardcoden
-        self.target_tiles = [[[x1,y2],[x2,y2]], [[x3,y3],[x4,y4]]]  # Koordinaten noch hardcoden
-        self.action_points = [5, 5]
+        self.player_tiles = [[17, 3], [3, 17]]    #Spieler1, Spieler2
+        self.anchor_pickup_tiles = [[8,8,1], [11,11,1]]           
+        self.anchor_tiles = [[[17, 3]], [[3, 17]]]        
+        self.target_tiles = [[[3,16],[4,17]], [[16,3],[17,4]]]   # [ [Sieg für Spieler1]   [Sieg für Spieler2] ] 
+        self.action_points = [5, 5] #S1, S2
         
         self.tile_dict = {}  
         tile_index = 0
@@ -242,9 +239,24 @@ class Athlos:
                 self.tile_dict[tile_index] = [column, row]
                 tile_index += 1
                 column += 1
-        self.board += 1   
+        self.board += 1 
+
+        coord_dict = {item[1]: item[0] for item in tile_dict.items()}  # rückwärts-dict
         
-      
+        self.cost_array = numpy.full((20, 20), 1, dtype="int32")
+        with open("tileCost.xml", "r") as cost_file:
+            lines = cost_file.readlines()
+            read = False
+            ind = 0
+            for line in enumerate(lines):
+                if read = True:
+                    self.cost_array[tile_dict[ind][0]][tile_dict[ind][1]] = line.replace("\t", "").replace("\n", "")
+                    ind += 1  
+                if "<Item>" in line:
+                    read = True
+                elif "</Item>" in line:
+                    read = False
+
         self.player = 1 # Anfangsspieler wird oben in den Parametern festgelegt
 
         
@@ -259,39 +271,92 @@ class Athlos:
             while column < 20 - gap_dict[row]
                 if column == 0 and gap_dict[row] != 0:
                     column += gap_dict[row]
-                self.board[row][column] = 1
+                self.board[row][column] = 9             # irgendetwas das Sinn macht als Wert für die Ecken?
                 column += 1
-        self.board += 1  
+        self.board -= 9                                 #   ""
         self.player = 1
         return self.get_observation()
 
     
-    def remove_dead_tiles(): 
-    
-    def DFS():
-        
+
+    def update_tiles():
+        visited_tiles = {}
+        components = {}
+        anchor_indices = []
+
+        def find_components():
+            count = 0
+
+            for tile, visited in visited_tiles.items():
+                if not visited:
+                    count += 1
+                    DFS(tile, count)
+
+        def DFS(tile, count):
+            visited_tiles[tile] = True
+            components[tile] = count
+            coord = tile_dict[tile]
+            neighbours = [
+                          coord_dict[ [coord[0]+1, coord[1]  ] ]
+                          coord_dict[ [coord[0]-1, coord[1]  ] ], 
+                          coord_dict[ [coord[0],   coord[1]+1] ],
+                          coord_dict[ [coord[0],   coord[1]-1] ], 
+                         ]
+
+            for n in neighbours:
+                try:
+                    if visited_tiles[tile] == False:
+                        DFS(n, count)
         
 
+        for tile, coordinates in tile_dict.items():
+            owner = board[coordinates[0], coordinates[1]]
+
+            if len(anchor_indices < 2):
+                for anch_coord in anchor_tiles[opp_index]:  #schlechte Namen für allen Ankerkram
+                    if coordinates == anch_coord:
+                        anchor_indices.append(tile)
+            if owner != 0 and owner != self.player:
+                _visited[tile] = False
+                _components[tile] = -1
         
-    
+        find_components()
+
+        opp_index = 1 if self.player == 1 else 0
+        for tile, component in components.items():
+            connected = False
+            for anch_tile in anchor_indices:
+                if components[tile] == components[anch_tile]:
+                    connected = True
+            if not connected:
+                self.board[tile_dict[tile][0], tile_dict[tile][1]] = 0
+
+
+
     def step(self, action):
         # hier Aktionen auf Brett anwenden
         x = tile_dict[action%334][0]
         y = tile_dict[action%334][1]
         
-        if action < 334:
-            if self.board[x][y] == 0:
-                self.board[x][y] = self.player
-            
-        elif action < 334*2:
-            if self.board[x][y] == self.player * -1 or self.board[x][y] == (self.player + 1) * -1:
-                self.board[x][y] = 0
-            
-        elif action  < 334*3:
-            if self.board[x][y] == self.player:
-                self.board[x][y] = self.player + 1
-            
-                  
+        action_cost = cost_array[x][y]
+        player_index = 0 if self.player > 0 else 1 # 1 -> 0, -1 -> 1
+
+        if action_points[player_index] >= action_cost:      # sollte aber eigentlich gar keine legale Aktion sein
+            if action < 334:
+                if self.board[x][y] == 0:
+                    self.board[x][y] = self.player
+                    action_points[player_index] -= action_cost
+
+            elif action < 334*2:
+                if self.board[x][y] == self.player * -1 or self.board[x][y] == (self.player + 1) * -1:
+                    self.board[x][y] = 0
+                    action_points[player_index] -= action_cost
+
+            elif action  < 334*3:
+                if self.board[x][y] == self.player:
+                    self.board[x][y] = self.player+1 if self.player > 0 else self.player-1
+                    action_points[player_index] -= action_cost
+                
         done = self.have_winner() or len(self.legal_actions()) == 0
 
         reward = 1 if self.have_winner() else 0
@@ -305,22 +370,42 @@ class Athlos:
     def get_observation(self):
         board_player1 = numpy.where(self.board == 1, 1, 0)   # geändert von ..1.0, 0.0).. was doch gar keinen Sinn macht
         board_player2 = numpy.where(self.board == -1, 1, 0)  # oder nicht  ... vielleicht doch, siehe self_play line .. weiß ich nicht mehr
-        board_to_play = numpy.full((6, 7), self.player, dtype="int32")
+        board_to_play = numpy.full((20, 20), self.player, dtype="int32") # was ist hier wichtig? sollten auch noch ecken ausgeblendet werden? wahrscheinlich schon oder
         return numpy.array([board_player1, board_player2, board_to_play])
 
     
     
     def legal_actions(self):
         legal = []
-
-        #   hier Erreichbarkeitscheck
-        # wenn board[x][y] != illegales Feld:
-        #
+        p1_tiles = []
+        for y in range(20):
+            for x in range(20):
+                if board[x][y] != -1:
+                    if board[x][y] == 1 or board[x][y] == 2:
+                        p1_tiles.Add([x,y])
+        p2_tiles = []
+        for y in range(20):
+            for x in range(20):
+                if board[x][y] != :
+                    if board[x][y] == -1 or board[x][y] == -2:
+                        p2_tiles.Add([x,y])
         
+        if self.player == 1:
+            for tile in p1_tiles:
+                legal.append(tile)
+                legal.append(tile+668)
+            for tile2 in p2_tiles:
+                legal.append(tile2+334)
+        else:
+            for tile in p2_tiles:
+                legal.append(tile)
+                legal.append(tile+668)
+            for tile2 in p1_tiles:
+                legal.append(tile2+334)
+
         return legal
 
-    
-    
+        
     def have_winner(self):
         for tile in self.target_tiles:
             if self.board[tile[0]][tile[1]] == self.player * -1:
@@ -330,11 +415,16 @@ class Athlos:
     
     def expert_action(self):
         board = self.board
-        action = numpy.random.choice(self.legal_actions())
-       
+        player_index = 0 if player > 0 else 1
+        expert_action = numpy.random.choice(self.legal_actions())
+        distance = 50
         #immer Feld das am nächsten zum Gegner liegt als "Experte" ?
+        for action in self.legal_actions():
+            if math.sqrt((tile_dict[action%334][0] - player_tiles[player_index][0])**2
+                       + (tile_dict[action%334][1] - player_tiles[player_index][1])**2)  <  distance:
+                expert_action = action
 
-        return action
+        return expert_action
 
     
     def render(self):
