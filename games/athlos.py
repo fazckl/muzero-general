@@ -244,7 +244,7 @@ class Athlos:
         coord_dict = {repr(item[1]): item[0] for item in self.tile_dict.items()}  # rueckwaerts-dict
         
         self.cost_array = numpy.full((20, 20), 1, dtype="int32")
-        with open("./tileCost.xml", "r") as cost_file:
+        with open("./games/tileCost.xml", "r") as cost_file:
             lines = cost_file.readlines()
             read = False
             ind = 0
