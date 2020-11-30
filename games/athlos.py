@@ -331,11 +331,6 @@ class Athlos:
                 try:
                     if visited_tiles[tile] == False:
                         DFS(n, count)
-        
-####################
-        
-
-
 
     def step(self, action):
         # hier Aktionen auf Brett anwenden
