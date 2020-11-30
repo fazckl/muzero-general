@@ -37,7 +37,7 @@ class MuZeroConfig:
         ### Self-Play
         self.num_workers = 1  # Number of simultaneous threads/workers self-playing to feed the replay buffer
         self.selfplay_on_gpu = False
-        self.max_moves = 100  # - müsste mal ertestet werden aber bestimmt über 200?  ..Maximum number of moves if game is not finished before
+        self.max_moves = 100  # - muesste mal ertestet werden aber bestimmt ueber 200?  ..Maximum number of moves if game is not finished before
         self.num_simulations = 200  # Number of future moves self-simulated
         self.discount = 1  # Chronological discount of the reward
         self.temperature_threshold = None  # Number of moves before dropping the temperature given by visit_softmax_temperature_fn to 0 (ie selecting the best action). If None, visit_softmax_temperature_fn is used every time
@@ -225,7 +225,7 @@ class Athlos:
         self.player_tiles = [[17, 3], [3, 17]]    #Spieler1, Spieler2
         self.anchor_pickup_tiles = [[8,8,1], [11,11,1]]           
         self.anchor_tiles = [[[17, 3]], [[3, 17]]]        
-        self.target_tiles = [[[3,16],[4,17]], [[16,3],[17,4]]]   # [ [Sieg für Spieler1]   [Sieg für Spieler2] ] 
+        self.target_tiles = [[[3,16],[4,17]], [[16,3],[17,4]]]   # [ [Sieg fuer Spieler1]   [Sieg fuer Spieler2] ] 
         self.action_points = [5, 5] #S1, S2
         
         self.tile_dict = {}  
@@ -241,7 +241,7 @@ class Athlos:
                 column += 1
         self.board += 1 
 
-        coord_dict = {item[1]: item[0] for item in self.tile_dict.items()}  # rückwärts-dict
+        coord_dict = {item[1]: item[0] for item in self.tile_dict.items()}  # rueckwärts-dict
         
         self.cost_array = numpy.full((20, 20), 1, dtype="int32")
         with open("tileCost.xml", "r") as cost_file:
@@ -271,7 +271,7 @@ class Athlos:
             while column < 20 - self.gap_dict[row]:
                 if column == 0 and self.gap_dict[row] != 0:
                     column += self.gap_dict[row]
-                self.board[row][column] = 9             # irgendetwas das Sinn macht als Wert für die Ecken?
+                self.board[row][column] = 9             # irgendetwas das Sinn macht als Wert fuer die Ecken?
                 column += 1
         self.board -= 9                                 #   ""
         self.player = 1
@@ -288,7 +288,7 @@ class Athlos:
             owner = board[coordinates[0], coordinates[1]]
 
             if len(anchor_indices < 2):
-                for anch_coord in anchor_tiles[opp_index]:  #schlechte Namen für allen Ankerkram
+                for anch_coord in anchor_tiles[opp_index]:  #schlechte Namen fuer allen Ankerkram
                     if coordinates == anch_coord:
                         anchor_indices.append(tile)
             if owner != 0 and owner != self.player:
