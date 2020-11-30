@@ -241,7 +241,7 @@ class Athlos:
                 column += 1
         self.board += 1 
 
-        coord_dict = {item[1]: item[0] for item in self.tile_dict.items()}  # rueckwärts-dict
+        coord_dict = {item[1]: item[0] for item in self.tile_dict.items()}  # rueckwaerts-dict
         
         self.cost_array = numpy.full((20, 20), 1, dtype="int32")
         with open("tileCost.xml", "r") as cost_file:
@@ -373,7 +373,7 @@ class Athlos:
     
     
     def get_observation(self):
-        board_player1 = numpy.where(self.board == 1, 1, 0)   # geändert von ..1.0, 0.0).. was doch gar keinen Sinn macht
+        board_player1 = numpy.where(self.board == 1, 1, 0)   # geaendert von ..1.0, 0.0).. was doch gar keinen Sinn macht
         board_player2 = numpy.where(self.board == -1, 1, 0)  # oder nicht  ... vielleicht doch, siehe self_play line .. weiß ich nicht mehr
         board_to_play = numpy.full((20, 20), self.player, dtype="int32") # was ist hier wichtig? sollten auch noch ecken ausgeblendet werden? wahrscheinlich schon oder
         return numpy.array([board_player1, board_player2, board_to_play])
@@ -421,7 +421,7 @@ class Athlos:
         player_index = 0 if player > 0 else 1
         expert_action = numpy.random.choice(self.legal_actions())
         distance = 50
-        #immer Feld das am nächsten zum Gegner liegt als "Experte" ?
+        #immer Feld das am naechsten zum Gegner liegt als "Experte" ?
         for action in self.legal_actions():
             if math.sqrt((self.tile_dict[action%334][0] - player_tiles[player_index][0])**2
                        + (self.tile_dict[action%334][1] - player_tiles[player_index][1])**2)  <  distance:
